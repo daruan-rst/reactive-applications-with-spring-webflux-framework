@@ -1,3 +1,7 @@
 spring:
   application:
     name: users
+  r2dbc:
+    url: r2db:h2:mem:///testDb
+    username: test
+    password: test
