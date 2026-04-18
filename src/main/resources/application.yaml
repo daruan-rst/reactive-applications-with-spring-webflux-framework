@@ -5,3 +5,6 @@ spring:
     url: r2db:h2:mem:///testDb
     username: test
     password: test
+  sql:
+    init:
+      mode: embedded
