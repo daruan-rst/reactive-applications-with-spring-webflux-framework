@@ -1,5 +1,6 @@
 package com.appsdevelloperblog.reactive.ws.users.infrastructure.presentation;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class UserController {
 
     @PostMapping
-    public void createUser(@RequestBody Mono<CreateUserRequest> createUserRequest){
+    public void createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest){
 
 
     }
