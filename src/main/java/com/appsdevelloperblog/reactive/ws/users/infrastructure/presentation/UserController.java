@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono;
 public class UserController {
 
     @PostMapping
-    public void createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest){
-
+    public Mono<String> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest){
+        return Mono.just("OK");
 
     }
 }
