@@ -31,4 +31,16 @@ public class UserController {
                                             );
 
     }
+
+    @GetMapping("/{userId}")
+    public Mono<UserRest> getUser(@PathVariable("userId") UUID userId){
+        return Mono.just(
+                new UserRest(
+                        userId,
+                        "Sergey",
+                        "Kargopolov",
+                        "test@test.com"
+                )
+        );
+    }
 }
