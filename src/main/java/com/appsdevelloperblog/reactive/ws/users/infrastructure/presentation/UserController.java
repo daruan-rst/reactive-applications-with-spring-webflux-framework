@@ -46,7 +46,8 @@ public class UserController {
     }
 
     @GetMapping
-    private Flux<UserRest> getUsers(){
+    private Flux<UserRest> getUsers(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                    @RequestParam(value = "limit", defaultValue = "50") int limit) {
         return Flux.just(
                 new UserRest(UUID.randomUUID(), "Sergey", "Kargopolov", "test@test.com"),
                 new UserRest(UUID.randomUUID(), "Alice", "Smith", "alice@test.com"),
