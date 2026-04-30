@@ -1,5 +1,6 @@
 package com.appsdevelloperblog.reactive.ws.users.infrastructure.presentation;
 
+import com.appsdevelloperblog.reactive.ws.users.infrastructure.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,22 +15,35 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController {
 
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<ResponseEntity<UserRest>> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest){
-        return createUserRequest.map(
-                request ->
-                        new UserRest(
-                                UUID.randomUUID(),
-                                request.getFirstName(),
-                                request.getLastName(),
-                                request.getEmail())
-                                    ).map(
-                        userRest -> ResponseEntity
-                                .status(HttpStatus.CREATED)
-                                .location(URI.create("/users/" + userRest.getId()))
-                                .body(userRest)
-                                            );
+
+        return userService.createUser(createUserRequest)
+                .map(userRest -> ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .location(URI.create("/users/" + userRest.getId()))
+                        .body(userRest));
+
+//        return createUserRequest.map(
+//                request ->
+//                        new UserRest(
+//                                UUID.randomUUID(),
+//                                request.getFirstName(),
+//                                request.getLastName(),
+//                                request.getEmail())
+//                                    ).map(
+//                        userRest -> ResponseEntity
+//                                .status(HttpStatus.CREATED)
+//                                .location(URI.create("/users/" + userRest.getId()))
+//                                .body(userRest)
+//                                            );
 
     }
 
