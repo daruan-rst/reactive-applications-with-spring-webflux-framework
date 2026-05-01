@@ -8,6 +8,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -25,6 +27,12 @@ public class UserServiceImpl implements UserService {
                 .map(this::convertToEntity)
                 .flatMap(userRepository::save)
                 .map(this::convertToRest);
+    }
+
+    @Override
+    public Mono<UserRest> getUserById(UUID id) {
+        return userRepository.findById(id)
+                .mapNotNull(this::convertToRest);
     }
 
     private UserEntity convertToEntity(CreateUserRequest createUserRequest){
