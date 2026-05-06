@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Flux<UserRest> findAll(int page, int limit) {
+        if (page >0) page = page - 1 ;
         Pageable pageable = PageRequest.of(page, limit);
         return userRepository.findAllBy(pageable)
                 .map(this::convertToRest);
