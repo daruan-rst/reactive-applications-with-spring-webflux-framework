@@ -5,6 +5,7 @@ import com.appsdevelloperblog.reactive.ws.users.infrastructure.data.UserReposito
 import com.appsdevelloperblog.reactive.ws.users.infrastructure.presentation.CreateUserRequest;
 import com.appsdevelloperblog.reactive.ws.users.infrastructure.presentation.UserRest;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +34,14 @@ public class UserServiceImpl implements UserService {
                 .map(this::convertToEntity)
                 .flatMap(userRepository::save)
                 .map(this::convertToRest)
-                .onErrorMap(DuplicateKeyException.class,
-                        exception -> new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage()));
+                .onErrorMap(throwable -> {
+                    if (throwable instanceof ResponseStatusException ){
+                        return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
+                    } else if (throwable instanceof DataIntegrityViolationException ){
+                        return new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage());
+                    }
+                    return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage());
+                });
     }
 
     @Override
