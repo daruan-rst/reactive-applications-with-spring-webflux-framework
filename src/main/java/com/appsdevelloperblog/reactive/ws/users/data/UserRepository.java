@@ -1,4 +1,4 @@
-package com.appsdevelloperblog.reactive.ws.users.infrastructure.data;
+package com.appsdevelloperblog.reactive.ws.users.data;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

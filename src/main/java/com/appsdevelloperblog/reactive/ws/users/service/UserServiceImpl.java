@@ -1,12 +1,11 @@
-package com.appsdevelloperblog.reactive.ws.users.infrastructure.service;
+package com.appsdevelloperblog.reactive.ws.users.service;
 
-import com.appsdevelloperblog.reactive.ws.users.infrastructure.data.UserEntity;
-import com.appsdevelloperblog.reactive.ws.users.infrastructure.data.UserRepository;
-import com.appsdevelloperblog.reactive.ws.users.infrastructure.presentation.CreateUserRequest;
-import com.appsdevelloperblog.reactive.ws.users.infrastructure.presentation.UserRest;
+import com.appsdevelloperblog.reactive.ws.users.data.UserEntity;
+import com.appsdevelloperblog.reactive.ws.users.data.UserRepository;
+import com.appsdevelloperblog.reactive.ws.users.presentation.CreateUserRequest;
+import com.appsdevelloperblog.reactive.ws.users.presentation.UserRest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -33,15 +32,7 @@ public class UserServiceImpl implements UserService {
         return createUserRequestMono
                 .map(this::convertToEntity)
                 .flatMap(userRepository::save)
-                .map(this::convertToRest)
-                .onErrorMap(throwable -> {
-                    if (throwable instanceof ResponseStatusException ){
-                        return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
-                    } else if (throwable instanceof DataIntegrityViolationException ){
-                        return new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage());
-                    }
-                    return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage());
-                });
+                .map(this::convertToRest);
     }
 
     @Override

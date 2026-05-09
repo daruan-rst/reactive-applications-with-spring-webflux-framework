@@ -1,4 +1,4 @@
-package com.appsdevelloperblog.reactive.ws.users.infrastructure.presentation;
+package com.appsdevelloperblog.reactive.ws.users.presentation;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

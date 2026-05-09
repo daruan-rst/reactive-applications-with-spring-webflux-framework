@@ -1,28 +1,25 @@
-package com.appsdevelloperblog.reactive.ws.users.infrastructure.data;
+package com.appsdevelloperblog.reactive.ws.users.presentation;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
-@Table(name = "users")
-public class UserEntity {
+public class UserRest {
 
-    @Id
     private UUID id;
-
-    @Column("first_name")
     private String firstName;
-
-    @Column("last_name")
     private String lastName;
-
-    @Column("email")
     private String email;
 
-    @Column("password")
-    private String password;
+    public UserRest(UUID id, String firstName, String lastName, String email) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
+
+    public UserRest() {
+
+    }
 
     public UUID getId() {
         return id;
@@ -54,13 +51,5 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

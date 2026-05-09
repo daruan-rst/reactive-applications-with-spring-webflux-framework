@@ -1,6 +1,6 @@
-package com.appsdevelloperblog.reactive.ws.users.infrastructure.presentation;
+package com.appsdevelloperblog.reactive.ws.users.presentation;
 
-import com.appsdevelloperblog.reactive.ws.users.infrastructure.service.UserService;
+import com.appsdevelloperblog.reactive.ws.users.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
