@@ -1,0 +1,114 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Users Api
+meta:
+  id: wrk_bb3b2212416f431b8db3e0ddc546ff78
+  created: 1778683446717
+  modified: 1778721013889
+  description: ""
+collection:
+  - url: "{{ _.base_path }}{{ _.user_api_path }}"
+    name: Get All Users
+    meta:
+      id: req_41b2a1de4bbb44f6b25a628b17a4c72c
+      created: 1778683446767
+      modified: 1778684106849
+      isPrivate: false
+      description: ""
+      sortKey: -1778683446767
+    method: GET
+    parameters:
+      - name: page
+        value: "0"
+        description: ""
+        disabled: false
+      - name: limit
+        value: "30"
+        description: ""
+        disabled: false
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_path }}{{ _.user_api_path }}"
+    name: Get User By ID
+    meta:
+      id: req_9de78f0e9c4349bcbff5e45c75fe418d
+      created: 1778684122412
+      modified: 1778684214649
+      isPrivate: false
+      description: ""
+      sortKey: -1778683446717
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_path }}{{ _.user_api_path }}"
+    name: Create User
+    meta:
+      id: req_322063cb497f4b1385f481f8c867464d
+      created: 1778684242380
+      modified: 1778719964741
+      isPrivate: false
+      description: ""
+      sortKey: -1778683446617
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"firstName": "Antonio",
+        	"lastName": "Carlos Jobim",
+        	"email": "antonio.carlos.jobim@solbemol.com.br",
+        	"password": "passarim"
+        }	
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_500d87c9e5608fbd2185a60d04829cd7d55156ea
+    created: 1778683446757
+    modified: 1778683446757
+environments:
+  name: Base Environment
+  meta:
+    id: env_500d87c9e5608fbd2185a60d04829cd7d55156ea
+    created: 1778683446753
+    modified: 1778719920770
+    isPrivate: false
+  data:
+    base_path: http://localhost:8080
+    user_api_path: /users
