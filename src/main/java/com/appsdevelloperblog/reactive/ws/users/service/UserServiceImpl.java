@@ -9,10 +9,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.UUID;
 
@@ -21,8 +23,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -30,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
         // create UserEntity object
         return createUserRequestMono
-                .map(this::convertToEntity)
+                .flatMap(this::convertToEntity)
                 .flatMap(userRepository::save)
                 .map(this::convertToRest);
     }
@@ -49,13 +55,13 @@ public class UserServiceImpl implements UserService {
                 .map(this::convertToRest);
     }
 
-    private UserEntity convertToEntity(CreateUserRequest createUserRequest){
-
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(createUserRequest, userEntity);
-
-        return userEntity;
-
+    private Mono<UserEntity> convertToEntity(CreateUserRequest createUserRequest){
+        return Mono.fromCallable(() -> {
+            UserEntity userEntity = new UserEntity();
+            BeanUtils.copyProperties(createUserRequest, userEntity);
+            userEntity.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+            return userEntity;
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
     private UserRest convertToRest(UserEntity userEntity){
