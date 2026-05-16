@@ -2,16 +2,13 @@ package com.appsdevelloperblog.reactive.ws.users.service;
 
 import com.appsdevelloperblog.reactive.ws.users.data.UserEntity;
 import com.appsdevelloperblog.reactive.ws.users.data.UserRepository;
-import com.appsdevelloperblog.reactive.ws.users.presentation.CreateUserRequest;
-import com.appsdevelloperblog.reactive.ws.users.presentation.UserRest;
+import com.appsdevelloperblog.reactive.ws.users.presentation.model.CreateUserRequest;
+import com.appsdevelloperblog.reactive.ws.users.presentation.model.UserRest;
 import org.springframework.beans.BeanUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;

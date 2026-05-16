@@ -1,4 +1,4 @@
-package com.appsdevelloperblog.reactive.ws.users.presentation;
+package com.appsdevelloperblog.reactive.ws.users.presentation.model;
 
 public class AuthenticationRequest {
 
