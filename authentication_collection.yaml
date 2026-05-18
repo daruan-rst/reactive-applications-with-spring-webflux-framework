@@ -8,11 +8,11 @@ meta:
   description: ""
 collection:
   - url: "{{ _.base_path }}{{ _.login_path }}"
-    name: New Request
+    name: Login
     meta:
       id: req_2e11fd0136ac408aa794c32764cd9af6
       created: 1779072704782
-      modified: 1779072832710
+      modified: 1779072900282
       isPrivate: false
       description: ""
       sortKey: -1779072704782
