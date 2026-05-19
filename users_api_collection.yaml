@@ -67,7 +67,7 @@ collection:
     meta:
       id: req_322063cb497f4b1385f481f8c867464d
       created: 1778684242380
-      modified: 1778719964741
+      modified: 1779072664858
       isPrivate: false
       description: ""
       sortKey: -1778683446617
@@ -107,8 +107,7 @@ environments:
   meta:
     id: env_500d87c9e5608fbd2185a60d04829cd7d55156ea
     created: 1778683446753
-    modified: 1778719920770
+    modified: 1779072600891
     isPrivate: false
   data:
-    base_path: http://localhost:8080
     user_api_path: /users

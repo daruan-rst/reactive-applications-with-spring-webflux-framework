@@ -1,0 +1,17 @@
+type: environment.insomnia.rest/5.0
+schema_version: "5.1"
+name: Application Environment
+meta:
+  id: wrk_c22cfdcab4214bb9ac9ea58cdd7df7ea
+  created: 1779072547318
+  modified: 1779072547318
+  description: ""
+environments:
+  name: Base Environment
+  meta:
+    id: env_a7c86aeee55938af72a8794d372177d1f5d89c5d
+    created: 1779072547328
+    modified: 1779072561732
+    isPrivate: false
+  data:
+    base_path: http://localhost:8080
