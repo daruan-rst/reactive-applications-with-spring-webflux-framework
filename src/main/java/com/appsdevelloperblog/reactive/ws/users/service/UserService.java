@@ -2,12 +2,13 @@ package com.appsdevelloperblog.reactive.ws.users.service;
 
 import com.appsdevelloperblog.reactive.ws.users.presentation.model.CreateUserRequest;
 import com.appsdevelloperblog.reactive.ws.users.presentation.model.UserRest;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface UserService {
+public interface UserService extends ReactiveUserDetailsService {
 
     Mono<UserRest> createUser(Mono<CreateUserRequest> createUserRequestMono);
 

@@ -7,12 +7,15 @@ import com.appsdevelloperblog.reactive.ws.users.presentation.model.UserRest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -68,5 +71,16 @@ public class UserServiceImpl implements UserService {
 
         return userRest;
 
+    }
+
+    @Override
+    public Mono<UserDetails> findByUsername(String email) {
+        return userRepository.findByEmail(email)
+                .map(userEntity ->
+                    User.withUsername(userEntity.getEmail())
+                            .password(userEntity.getPassword())
+                            .authorities(new ArrayList<>())
+                            .build()
+                );
     }
 }
