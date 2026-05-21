@@ -15,5 +15,6 @@ public class AuthenticationManagerConfig {
                                                                        PasswordEncoder passwordEncoder){
         UserDetailsRepositoryReactiveAuthenticationManager authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
         authenticationManager.setPasswordEncoder(passwordEncoder);
+        return authenticationManager;
     }
 }
