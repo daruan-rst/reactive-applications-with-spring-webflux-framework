@@ -3,7 +3,9 @@ package com.appsdevelloperblog.reactive.ws.users.presentation;
 import com.appsdevelloperblog.reactive.ws.users.presentation.model.AuthenticationRequest;
 import com.appsdevelloperblog.reactive.ws.users.service.AuthenticationService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +21,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<Void>> login(@RequestBody Mono<AuthenticationRequest> authenticationRequestMono) {
+    public Mono<ResponseEntity<Object>> login(@RequestBody Mono<AuthenticationRequest> authenticationRequestMono) {
         return authenticationRequestMono
                 .flatMap(authenticationRequest ->
                         authenticationService.authenticate(
@@ -31,6 +33,9 @@ public class AuthenticationController {
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer" +
                                         authenticationResultMap.get("token"))
                                 .header("UserId", authenticationResultMap.get("userId"))
-                                .build());
+                                .build())
+                .onErrorReturn(BadCredentialsException.class,
+                        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials"))
+                .onErrorReturn(Exception.class, ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 }
