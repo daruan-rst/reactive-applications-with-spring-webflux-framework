@@ -19,3 +19,6 @@ logging:
     io:
       r2dbc:
         h2: DEBUG
+
+token:
+  secret:
