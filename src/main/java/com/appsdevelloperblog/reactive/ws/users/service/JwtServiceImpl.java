@@ -1,9 +1,11 @@
 package com.appsdevelloperblog.reactive.ws.users.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +32,22 @@ public class JwtServiceImpl implements JwtService{
                 .expiration(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    @Override
+    public Mono<Boolean> validateToken(String token) {
+        return Mono.just(token)
+                .map(jwt -> parseToken(jwt))
+                .map(claims -> !claims.getExpiration().before(new Date()))
+                .onErrorReturn(false);
+    }
+
+    private Claims parseToken(String token){
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     private SecretKey getSigningKey(){
