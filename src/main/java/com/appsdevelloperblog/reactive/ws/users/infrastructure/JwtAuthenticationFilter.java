@@ -2,11 +2,18 @@ package com.appsdevelloperblog.reactive.ws.users.infrastructure;
 
 import com.appsdevelloperblog.reactive.ws.users.service.JwtService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+
+import java.util.Collections;
 
 public class JwtAuthenticationFilter implements WebFilter {
 
@@ -19,7 +26,30 @@ public class JwtAuthenticationFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String token = extractToken(exchange);
-        return chain.filter(exchange);
+
+        if (token == null ){
+            return chain.filter(exchange);
+        }
+
+        return validateToken(token)
+                .flatMap(isValid -> isValid ? authenticateAndContinue(token, exchange, chain) :
+                        handleInvalidToken(exchange));
+    }
+
+    private Mono<Void> authenticateAndContinue(String token, ServerWebExchange exchange, WebFilterChain chain) {
+        return Mono.just("extractTokenSubject()")
+                .flatMap(subject -> {
+                    Authentication auth = new UsernamePasswordAuthenticationToken(subject, null,
+                            Collections.emptyList());
+                    return chain
+                            .filter(exchange)
+                            .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
+                });
+    }
+
+    private Mono<Void> handleInvalidToken(ServerWebExchange exchange) {
+        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        return exchange.getResponse().setComplete();
     }
 
     private String extractToken(ServerWebExchange exchange){
