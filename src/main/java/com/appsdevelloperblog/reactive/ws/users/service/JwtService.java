@@ -7,4 +7,6 @@ public interface JwtService {
     String generateJwt(String subject);
 
     Mono<Boolean> validateToken(String token);
+
+    String extractTokenSubject(String token);
 }

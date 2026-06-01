@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -40,6 +39,11 @@ public class JwtServiceImpl implements JwtService{
                 .map(jwt -> parseToken(jwt))
                 .map(claims -> !claims.getExpiration().before(new Date()))
                 .onErrorReturn(false);
+    }
+
+    @Override
+    public String extractTokenSubject(String token) {
+        return parseToken(token).getSubject();
     }
 
     private Claims parseToken(String token){
