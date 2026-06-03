@@ -8,8 +8,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-@Repository
-public interface UserRepository extends ReactiveCrudRepository <UserEntity, UUID>{
+public interface UserRepository extends ReactiveCrudRepository<UserEntity, UUID> {
     Flux<UserEntity> findAllBy(Pageable pageable);
     Mono<UserEntity> findByEmail(String email);
 }
