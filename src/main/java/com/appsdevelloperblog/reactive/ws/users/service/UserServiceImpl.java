@@ -55,6 +55,11 @@ public class UserServiceImpl implements UserService {
                 .map(this::convertToRest);
     }
 
+    @Override
+    public Flux<UserRest> userStream() {
+        return null;
+    }
+
     private Mono<UserEntity> convertToEntity(CreateUserRequest createUserRequest){
         return Mono.fromCallable(() -> {
             UserEntity userEntity = new UserEntity();
