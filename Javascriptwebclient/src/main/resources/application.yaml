@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Javascriptwebclient
+server:
+  port: 0
