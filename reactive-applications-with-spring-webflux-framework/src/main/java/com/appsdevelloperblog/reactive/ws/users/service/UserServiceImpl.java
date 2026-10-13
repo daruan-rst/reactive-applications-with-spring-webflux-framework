@@ -2,6 +2,7 @@ package com.appsdevelloperblog.reactive.ws.users.service;
 
 import com.appsdevelloperblog.reactive.ws.users.data.UserEntity;
 import com.appsdevelloperblog.reactive.ws.users.data.UserRepository;
+import com.appsdevelloperblog.reactive.ws.users.presentation.model.AlbumRest;
 import com.appsdevelloperblog.reactive.ws.users.presentation.model.CreateUserRequest;
 import com.appsdevelloperblog.reactive.ws.users.presentation.model.UserRest;
 import org.springframework.beans.BeanUtils;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -28,12 +30,16 @@ public class UserServiceImpl implements UserService {
 
     private final Sinks.Many<UserRest> userSink;
 
+    private final WebClient webClient;
+
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
-                           Sinks.Many<UserRest> userSink) {
+                           Sinks.Many<UserRest> userSink,
+                           WebClient webClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userSink = userSink;
+        this.webClient = webClient;
     }
 
     @Override
@@ -51,12 +57,12 @@ public class UserServiceImpl implements UserService {
     public Mono<UserRest> getUserById(UUID id, String include) {
         return userRepository.findById(id)
                 .mapNotNull(this::convertToRest)
-                .map(user -> {
+                .flatMap(user -> {
                     if (include != null && include.equals("albums")){
                         // fetch user's photo albums and add them to a user object
-                        return includeUserAlbums();
+                        return includeUserAlbums(user);
                     }
-                    return user;
+                    return Mono.just(user);
                 });
     }
 
@@ -102,5 +108,20 @@ public class UserServiceImpl implements UserService {
                             .authorities(new ArrayList<>())
                             .build()
                 );
+    }
+
+    private Mono<UserRest> includeUserAlbums(UserRest user) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .port(8084)
+                        .path("/albums")
+                        .build())
+                .retrieve()
+                .bodyToFlux(AlbumRest.class)
+                .collectList()
+                .map(albums ->{
+                    user.setAlbums(albums);
+                    return user;
+                });
     }
 }

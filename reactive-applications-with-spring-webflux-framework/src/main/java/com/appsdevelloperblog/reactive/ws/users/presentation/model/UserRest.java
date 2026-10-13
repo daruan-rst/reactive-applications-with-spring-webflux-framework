@@ -1,6 +1,9 @@
 package com.appsdevelloperblog.reactive.ws.users.presentation.model;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.List;
 import java.util.UUID;
 
 public class UserRest {
@@ -9,12 +12,15 @@ public class UserRest {
     private String firstName;
     private String lastName;
     private String email;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<AlbumRest> albums;
 
-    public UserRest(UUID id, String firstName, String lastName, String email) {
+    public UserRest(UUID id, String firstName, String lastName, String email, List<AlbumRest> albums) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.albums = albums;
     }
 
     public UserRest() {
@@ -51,5 +57,13 @@ public class UserRest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<AlbumRest> getAlbums() {
+        return albums;
+    }
+
+    public void setAlbums(List<AlbumRest> albums) {
+        this.albums = albums;
     }
 }
