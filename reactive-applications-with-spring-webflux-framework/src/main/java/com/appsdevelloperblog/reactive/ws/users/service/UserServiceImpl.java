@@ -48,9 +48,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<UserRest> getUserById(UUID id) {
+    public Mono<UserRest> getUserById(UUID id, String include) {
         return userRepository.findById(id)
-                .mapNotNull(this::convertToRest);
+                .mapNotNull(this::convertToRest)
+                .map(user -> {
+                    if (include != null && include.equals("albums")){
+                        // fetch user's photo albums and add them to a user object
+                        return includeUserAlbums();
+                    }
+                    return user;
+                });
     }
 
     @Override
