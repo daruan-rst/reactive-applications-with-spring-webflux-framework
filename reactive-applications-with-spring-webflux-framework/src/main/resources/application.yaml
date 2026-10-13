@@ -22,3 +22,5 @@ logging:
 
 token:
   secret:
+
+base-uri: http://localhost
