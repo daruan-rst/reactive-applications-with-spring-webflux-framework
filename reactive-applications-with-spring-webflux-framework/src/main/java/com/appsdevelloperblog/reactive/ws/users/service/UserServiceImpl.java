@@ -54,13 +54,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<UserRest> getUserById(UUID id, String include) {
+    public Mono<UserRest> getUserById(UUID id, String include, String jwt) {
         return userRepository.findById(id)
                 .mapNotNull(this::convertToRest)
                 .flatMap(user -> {
                     if (include != null && include.equals("albums")){
                         // fetch user's photo albums and add them to a user object
-                        return includeUserAlbums(user);
+                        return includeUserAlbums(user, jwt);
                     }
                     return Mono.just(user);
                 });
@@ -110,12 +110,13 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-    private Mono<UserRest> includeUserAlbums(UserRest user) {
+    private Mono<UserRest> includeUserAlbums(UserRest user, String jwt) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .port(8084)
                         .path("/albums")
                         .build())
+                .header("Authorization", jwt)
                 .retrieve()
                 .bodyToFlux(AlbumRest.class)
                 .collectList()

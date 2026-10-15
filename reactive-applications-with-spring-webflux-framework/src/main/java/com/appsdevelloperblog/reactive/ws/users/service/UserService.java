@@ -12,7 +12,7 @@ public interface UserService extends ReactiveUserDetailsService {
 
     Mono<UserRest> createUser(Mono<CreateUserRequest> createUserRequestMono);
 
-    Mono<UserRest> getUserById(UUID id, String include);
+    Mono<UserRest> getUserById(UUID id, String include, String jwt);
 
     Flux<UserRest> findAll(int page, int limit);
 
