@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @GetMapping
-    private Flux<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+    public Flux<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                     @RequestParam(value = "limit", defaultValue = "50") int limit) {
         return userService.findAll(page, limit);
     }
