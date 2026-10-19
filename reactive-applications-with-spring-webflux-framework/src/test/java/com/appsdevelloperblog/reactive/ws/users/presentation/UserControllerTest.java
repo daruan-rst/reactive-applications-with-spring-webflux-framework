@@ -1,6 +1,7 @@
 package com.appsdevelloperblog.reactive.ws.users.presentation;
 
 import com.appsdevelloperblog.reactive.ws.users.service.UserService;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -11,5 +12,11 @@ class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @Test
+    void testCreateUser_withValidRequest_returnsCreatedStatusAndUserDetails() {
+
+
+    }
 
 }
