@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static reactor.core.publisher.Mono.when;
 
 @WebFluxTest(UserController.class)
 class UserControllerTest {
@@ -47,6 +48,8 @@ class UserControllerTest {
                 createUserRequest.getEmail(),
                 null
         );
+
+        when(userService.createUser(Mockito.<Mono<CreateUserRequest>>any())).thenReturn(Mono.just(expectedUserRest));
 
         // Act
         webTestClient
