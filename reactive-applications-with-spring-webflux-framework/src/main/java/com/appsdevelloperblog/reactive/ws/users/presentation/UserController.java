@@ -29,9 +29,9 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<ResponseEntity<UserRest>> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest){
+    public Mono<ResponseEntity<UserRest>> createUser(@RequestBody @Valid CreateUserRequest createUserRequest){
 
-        return userService.createUser(createUserRequest)
+        return userService.createUser(Mono.just(createUserRequest))
                 .map(userRest -> ResponseEntity
                         .status(HttpStatus.CREATED)
                         .location(URI.create("/users/" + userRest.getId()))

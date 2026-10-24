@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(UserController.class)
-@Import(TestSecurityConfig.class)
+//@Import(TestSecurityConfig.class)
 class UserControllerTest {
 
     @MockitoBean
@@ -74,6 +74,28 @@ class UserControllerTest {
         verify(userService, times(1)).createUser(Mockito.<Mono<CreateUserRequest>>any());
 
 
+    }
+
+    @Test
+    void testCreateUser_withInvalidRequest_returnsBadRequest() {
+        // Arrange
+        CreateUserRequest invalidRequest = new CreateUserRequest(
+                "Sergey",
+                "Kargopolov",
+                "test@test.com",
+                "123" // Short password
+        );
+
+        // Act & Assert
+        webTestClient
+                .post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(invalidRequest)
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        verify(userService, never()).createUser(any());
     }
 
 }
