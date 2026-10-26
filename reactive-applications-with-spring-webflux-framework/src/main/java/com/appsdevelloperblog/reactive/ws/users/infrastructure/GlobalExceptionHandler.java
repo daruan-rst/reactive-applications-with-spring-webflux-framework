@@ -43,4 +43,10 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException exception){
         return Mono.just(ErrorResponse.builder(exception, HttpStatus.FORBIDDEN, exception.getMessage()).build());
     }
+
+    @ExceptionHandler(Exception.class)
+    public Mono<ErrorResponse> handleGeneralException(Exception exception) {
+        return Mono.just(ErrorResponse.builder(exception, HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()).build());
+    }
+
 }
