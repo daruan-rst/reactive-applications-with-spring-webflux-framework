@@ -15,12 +15,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+import reactor.test.StepVerifier;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith({MockitoExtension.class})
 class UserServiceImplTest {
@@ -67,8 +68,23 @@ class UserServiceImplTest {
         when(userRepository.save(any(UserEntity.class))).thenReturn(Mono.just(savedEntity));
 
         // Act
-        userService.createUser(Mono.just(createUserRequest));
+        Mono<UserRest> result = userService.createUser(Mono.just(createUserRequest));
 
         // Assert
+
+        StepVerifier.create(result)
+                .expectNextMatches(userRest ->
+                        userRest.getId().equals(savedEntity.getId()) &&
+                        userRest.getFirstName().equals(savedEntity.getFirstName()) &&
+                        userRest.getLastName().equals(savedEntity.getLastName()) &&
+                        userRest.getEmail().equals(savedEntity.getEmail())
+                )
+                .verifyComplete();
+
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+
+//        UserRest user = result.block();
+//        assertEquals(savedEntity.getId(), user.getId());
+//        assertEquals(savedEntity.getFirstName(), user.getFirstName());
     }
 }
