@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.test.StepVerifier;
@@ -86,5 +87,41 @@ class UserServiceImplTest {
 //        UserRest user = result.block();
 //        assertEquals(savedEntity.getId(), user.getId());
 //        assertEquals(savedEntity.getFirstName(), user.getFirstName());
+    }
+
+    @Test
+    void testCreateUser_withValidRequest_EmitsEventToSink() {
+        // Arrange
+        CreateUserRequest request = new CreateUserRequest("John", "Doe", "john@example.com", "password123");
+
+        UserEntity savedEntity = new UserEntity();
+        savedEntity.setId(UUID.randomUUID());
+        savedEntity.setFirstName("John");
+        savedEntity.setLastName("Doe");
+        savedEntity.setEmail("john@example.com");
+        savedEntity.setPassword("encodedPassword");
+
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+        when(userRepository.save(any(UserEntity.class))).thenReturn(Mono.just(savedEntity));
+
+        // Subscribe to the sink before triggering the service call.
+        Flux<UserRest> sinkFlux = usersSink.asFlux();
+
+        // Act
+
+        // Assert
+        StepVerifier.create(
+                        userService.createUser(Mono.just(request))
+                                .thenMany(usersSink.asFlux().take(1))
+                )
+                .expectNextMatches(userRest ->
+                        userRest.getId().equals(savedEntity.getId()) &&
+                                userRest.getFirstName().equals(savedEntity.getFirstName()) &&
+                                userRest.getLastName().equals(savedEntity.getLastName()) &&
+                                userRest.getEmail().equals(savedEntity.getEmail())
+                )
+                .verifyComplete();
+
+
     }
 }
