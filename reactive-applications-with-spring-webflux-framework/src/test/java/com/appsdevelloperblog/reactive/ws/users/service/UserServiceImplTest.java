@@ -2,6 +2,7 @@ package com.appsdevelloperblog.reactive.ws.users.service;
 
 import com.appsdevelloperblog.reactive.ws.users.data.UserEntity;
 import com.appsdevelloperblog.reactive.ws.users.data.UserRepository;
+import com.appsdevelloperblog.reactive.ws.users.presentation.model.AlbumRest;
 import com.appsdevelloperblog.reactive.ws.users.presentation.model.CreateUserRequest;
 import com.appsdevelloperblog.reactive.ws.users.presentation.model.UserRest;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Sinks;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -150,5 +152,65 @@ class UserServiceImplTest {
                         userRest.getAlbums() == null)
                 .verifyComplete();
 
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    void testGetUserById_WithIncludeAlbums_ReturnsAlbums() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        String jwt = "valid-jwt";
+
+        // 1. Setup UserEntity
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setFirstName("Sergey");
+        userEntity.setLastName("Kargopolov");
+        userEntity.setEmail("test@test.com");
+        userEntity.setPassword("encodedPass");
+
+        // 2. Mock repository response
+        when(userRepository.findById(userId)).thenReturn(Mono.just(userEntity));
+
+        // 3. Mock WebClient response with albums
+        WebClient.RequestHeadersUriSpec getSpec = mock(WebClient.RequestHeadersUriSpec.class);
+        WebClient.RequestHeadersSpec headersSpec = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
+
+        when(webClient.get()).thenReturn(getSpec);
+        when(getSpec.uri(any(Function.class))).thenReturn(headersSpec);
+        when(headersSpec.header(eq("Authorization"), eq(jwt))).thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
+
+        // Explicitly return test albums
+        AlbumRest album1 = new AlbumRest("album1", "Summer Vacation");
+        AlbumRest album2 = new AlbumRest("album2", "Family Reunion");
+        when(responseSpec.bodyToFlux(AlbumRest.class)).thenReturn(Flux.just(album1, album2));
+
+        // Act
+        Mono<UserRest> result = userService.getUserById(userId, "albums", jwt);
+
+        // Assert
+        // Assert: Verify albums are present
+        StepVerifier.create(result)
+                .expectNextMatches(user -> {
+                    // Verify user details
+                    assertEquals(userId, user.getId(), "User ID mismatch");
+                    assertEquals(userEntity.getFirstName(), user.getFirstName(), "First name mismatch");
+                    assertEquals(userEntity.getLastName(), user.getLastName(), "Last name mismatch");
+                    assertEquals(userEntity.getEmail(), user.getEmail(), "Email mismatch");
+
+                    // Verify albums
+                    assertNotNull(user.getAlbums(), "Albums list should not be null");
+                    assertEquals(2, user.getAlbums().size(), "Incorrect number of albums");
+                    assertEquals("Summer Vacation", user.getAlbums().get(0).getTitle());
+                    assertEquals("Family Reunion", user.getAlbums().get(1).getTitle());
+                    return true;
+                })
+                .verifyComplete();
+
+        // Verify repository call
+        verify(userRepository).findById(userId);
     }
 }
