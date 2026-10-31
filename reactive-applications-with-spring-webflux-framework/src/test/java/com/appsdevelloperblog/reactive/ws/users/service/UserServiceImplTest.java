@@ -124,4 +124,31 @@ class UserServiceImplTest {
 
 
     }
+
+    @Test
+    void testGetUserById_WithExistingUser_ReturnsUserRest() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setFirstName("Sergey");
+        userEntity.setLastName("Kargopolov");
+        userEntity.setEmail("test@test.com");
+
+        when(userRepository.findById(userId)).thenReturn(Mono.just(userEntity));
+
+        // Act
+        Mono<UserRest> result = userService.getUserById(userId, null, "jwt-token");
+
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNextMatches(userRest -> userRest.getId().equals(userId) &&
+                        userRest.getFirstName().equals(userEntity.getFirstName()) &&
+                        userRest.getLastName().equals(userEntity.getLastName()) &&
+                        userRest.getEmail().equals(userEntity.getEmail()) &&
+                        userRest.getAlbums() == null)
+                .verifyComplete();
+
+    }
 }
