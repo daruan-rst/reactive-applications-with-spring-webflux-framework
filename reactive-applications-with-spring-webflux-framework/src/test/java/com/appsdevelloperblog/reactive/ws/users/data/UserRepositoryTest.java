@@ -52,6 +52,10 @@ class UserRepositoryTest {
 
     @AfterAll
     void tearDown() {
+        databaseClient.sql("TRUNCATE TABLE users")
+                .then()
+                .as(StepVerifier::create)
+                .verifyComplete();
     }
 
     @Test
