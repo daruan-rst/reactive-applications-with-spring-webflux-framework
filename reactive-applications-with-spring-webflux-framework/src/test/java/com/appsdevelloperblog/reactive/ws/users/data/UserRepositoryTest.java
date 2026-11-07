@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.r2dbc.core.DatabaseClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -81,6 +83,17 @@ class UserRepositoryTest {
         // Act & Assert
         StepVerifier.create(userRepository.findByEmail(nonExistentEmail))
                 .expectNextCount(0)
+                .verifyComplete();
+    }
+
+    @Test
+    void testFindAllBy_WithValidPageable_ReturnsPaginatedResults() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 2); // First page, page size = 2
+
+        // Act & Assert
+        StepVerifier.create(userRepository.findAllBy(pageable))
+                .expectNextCount(2) // Expect exactly 2 items on the first page
                 .verifyComplete();
     }
 }
