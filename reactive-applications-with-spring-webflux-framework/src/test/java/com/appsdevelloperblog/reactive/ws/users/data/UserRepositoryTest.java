@@ -72,4 +72,15 @@ class UserRepositoryTest {
                 .expectNextMatches(user -> user.getEmail().equals(emailToFind))
                 .verifyComplete();
     }
+
+    @Test
+    void testFindByEmail_WithEmailThatDoesNotExist_ReturnsEmptyMono() {
+        // Arrange
+        String nonExistentEmail = "nonexistent@example.com";
+
+        // Act & Assert
+        StepVerifier.create(userRepository.findByEmail(nonExistentEmail))
+                .expectNextCount(0)
+                .verifyComplete();
+    }
 }
