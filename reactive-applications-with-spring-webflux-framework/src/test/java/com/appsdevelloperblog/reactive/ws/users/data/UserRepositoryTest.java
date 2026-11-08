@@ -96,4 +96,16 @@ class UserRepositoryTest {
                 .expectNextCount(2) // Expect exactly 2 items on the first page
                 .verifyComplete();
     }
+
+    @Test
+    void testFindAllBy_WithNonExistentPage_ReturnsEmptyFlux() {
+        // Arrange
+        Pageable pageable = PageRequest.of(1, 2); // Second page, page size = 2 (no data exists here)
+
+        // Act & Assert
+        StepVerifier.create(userRepository.findAllBy(pageable))
+                .expectNextCount(0) // Expect no items on the second page
+                .expectComplete()
+                .verify();
+    }
 }
