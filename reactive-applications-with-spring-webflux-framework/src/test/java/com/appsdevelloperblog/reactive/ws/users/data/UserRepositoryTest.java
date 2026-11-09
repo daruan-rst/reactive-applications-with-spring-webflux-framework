@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -27,32 +28,33 @@ class UserRepositoryTest {
     @BeforeAll
     void setUp() {
         UserEntity user1 = new UserEntity(UUID.randomUUID(),
-                "john",
-                "doe",
-                "john.doe@gmail.com",
+                "John",
+                "Doe",
+                "john.doe@example.com",
                 "123456789");
 
         UserEntity user2 = new UserEntity(UUID.randomUUID(),
-                "jane",
-                "doe",
-                "jane.doe@gmail.com",
+                "Jane",
+                "Doe",
+                "jane.doe@example.com",
                 "123456789");
 
-        String insertSql = "INSERT INTO users (id, first_name, last_name, email, password) " +
-                "VALUES (:id, :firstName, :lastName, :email, :password)";
+        String insertSql = "INSERT INTO users (id, first_name, last_name, email, password) VALUES " +
+                "(:id, :firstName, :lastName, :email, :password)";
 
         Flux.just(user1, user2)
                 .concatMap(user -> databaseClient.sql(insertSql)
-                .bind("id", user.getId())
-                .bind("firstName", user.getFirstName())
-                .bind("lastName", user.getLastName())
-                .bind("email", user.getEmail())
-                .bind("password", user.getPassword())
-                .fetch()
-                .rowsUpdated())
+                        .bind("id", user.getId())
+                        .bind("firstName", user.getFirstName())
+                        .bind("lastName", user.getLastName())
+                        .bind("email", user.getEmail())
+                        .bind("password", user.getPassword())
+                        .fetch()
+                        .rowsUpdated())
                 .then()
                 .as(StepVerifier::create)
                 .verifyComplete();
+
     }
 
     @AfterAll
@@ -108,4 +110,18 @@ class UserRepositoryTest {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    void testSave_whenExistingEmailProvided_shouldFail() {
+        // Arrange
+        UserEntity invalidUser = new UserEntity(null, "Sergey", "Kargopolov", "jane.doe@example.com", "password");
+
+        // Act & Assert
+        userRepository.save(invalidUser)
+                .as(StepVerifier::create)
+                .expectError(DataIntegrityViolationException.class)
+                .verify();
+    }
+
+
 }
